@@ -19,6 +19,7 @@ import com.mobigen.accounts.dto.CustomerDto;
 import com.mobigen.accounts.dto.ErrorResponseDto;
 import com.mobigen.accounts.dto.ResponseDto;
 import com.mobigen.accounts.service.IAccountsService;
+import com.mobigen.accounts.service.client.CardsFeignClient;
 import com.mobigen.accounts.utils.RequestUtil;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,6 +44,8 @@ public class AccountsController {
 
     private IAccountsService iAccountsService;
 
+    private CardsFeignClient cardsFeignClient;
+
     @Operation(summary = "Gateway check REST API", description = "REST API to check API-Gateway")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
@@ -54,6 +57,17 @@ public class AccountsController {
         log.info("msa-correlation-id: " + customHeaderId);
         log.info(RequestUtil.getRequestHeaderInfos(request));
         return ResponseEntity.status(HttpStatus.OK).body("Accounts OK");
+    }
+
+    @Operation(summary = "Gateway check REST API", description = "REST API to check API-Gateway")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    @GetMapping("/health2")
+    public ResponseEntity<String> checkHealth2(HttpServletRequest request,
+        @RequestHeader(value = "msa-correlation-id", required = false, defaultValue = "fake-id") String customHeaderId) {
+        return cardsFeignClient.fetchCardDetails();
     }
 
     // 현재 rest api 에 대한 설명 및 응답 객체 내용 설명
