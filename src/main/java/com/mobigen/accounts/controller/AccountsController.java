@@ -1,5 +1,7 @@
 package com.mobigen.accounts.controller;
 
+import java.net.InetAddress;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +58,13 @@ public class AccountsController {
         @RequestHeader(value = "msa-correlation-id", required = false, defaultValue = "fake-id") String customHeaderId) {
         log.info("msa-correlation-id: " + customHeaderId);
         log.info(RequestUtil.getRequestHeaderInfos(request));
-        return ResponseEntity.status(HttpStatus.OK).body("Accounts OK");
+        String hostname = "null";
+        try {
+                hostname = InetAddress.getLocalHost().getHostName().toString();
+        } catch (Exception e) {
+                log.error(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("HostName: " + hostname);
     }
 
     @Operation(summary = "Gateway check REST API", description = "REST API to check API-Gateway")
