@@ -40,6 +40,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-log4j2:3.4.2'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client' // eureka client
 	implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
+	implementation 'org.springframework.cloud:spring-cloud-stream'
+	implementation 'org.springframework.cloud:spring-cloud-stream-binder-rabbit'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.h2database:h2' // original source - h2 memory database

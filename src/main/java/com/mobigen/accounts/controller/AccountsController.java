@@ -137,4 +137,16 @@ public class AccountsController {
                 .status(HttpStatus.OK)
                 .body(accountsContactInfoDto);
     }
+
+    @Operation(summary = "Send to communication (Test)", description = "Send to communication (Test)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    @GetMapping("/send")
+    public ResponseEntity<String> sendCommunicationTest(
+            @RequestParam(value = "param") String param) {
+        boolean result = iAccountsService.sendCommunication(param);
+        return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(result));
+    }
 }

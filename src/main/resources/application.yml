@@ -66,6 +66,19 @@ spring:
     port: 5672
     username: guest
     password: guest
+  cloud:
+    # openfeign:
+    #   circuitbreaker:
+    #     enabled: true
+    function:
+      definition: updateCommunication
+    stream:
+      bindings:
+        updateCommunication-in-0:
+          destination: communication-sent
+          group: ${spring.application.name}
+        sendCommunication-out-0:
+          destination: send-communication
 
 # server.port를 0으로 설정할 경우 '사용가능 한 랜덤'포트를 부여한다. eureka에 등록된 api를 가지고 gateway를 통해서 들어오기때문에 server.port는 어느것으로 부여되어도 상관없다.
 # server.port=0
