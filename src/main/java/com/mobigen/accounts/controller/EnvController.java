@@ -4,6 +4,7 @@ import java.net.InetAddress;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,6 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+@RefreshScope
 @Slf4j
 @Tag(name = "Env check for test", description = "Env check for test")
 @RestController
@@ -97,9 +99,15 @@ public class EnvController {
     )
     @GetMapping("/build-info")
     public ResponseEntity<String> getBuildInfo() {
+        String hostname = "null";
+        try {
+			hostname = InetAddress.getLocalHost().getHostName().toString();
+        } catch (Exception e) {
+			log.error(e.getMessage());
+        }
         return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(buildVersion);
+                    .body(buildVersion + "::" + hostname);
     }
 
     @Operation(
