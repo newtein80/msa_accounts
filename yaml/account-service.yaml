@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-account-app
+  namespace: group1-team2
+spec:
+  selector:
+    app: d-group1-team2-account
+  ports:
+    - protocol: TCP
+      port: 8801
+      targetPort: 8801
+      nodePort: 30211
+  type: NodePort
