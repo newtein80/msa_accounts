@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.mobigen.accounts.dto.LoansDto;
 
-@FeignClient("loans")
+@FeignClient(name = "loans", path = "/api", fallback = LoansFallback.class)
 public interface LoansFeignClient {
 
     @GetMapping(value = "/api/fetch", consumes = "application/json")

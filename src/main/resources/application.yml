@@ -67,9 +67,9 @@ spring:
     username: guest
     password: guest
   cloud:
-    # openfeign:
-    #   circuitbreaker:
-    #     enabled: true
+    openfeign:
+      circuitbreaker:
+        enabled: true
     function:
       definition: updateCommunication
     stream:
@@ -180,3 +180,38 @@ accounts:
   onCallSupport:
     - (555) 555-1234
     - (555) 523-1345
+
+# 10개의 요청을 기준으로 실패율을 측정
+# 실패율이 50%를 넘으면 Open 상태로 변경
+# 10초 후 Half-Open 상태로 복구 시도
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10 # 최근 10개의 요청을 기반으로 실패율 계산
+      permittedNumberOfCallsInHalfOpenState: 2 # Half-Open 상태에서 2개의 요청 허용
+      failureRateThreshold: 50 # 실패율이 50%를 초과하면 Open 상태로 변경
+      waitDurationInOpenState: 10000 # Open 상태에서 10초 후 Half-Open 상태로 변경
+
+# 최대 3번까지 재시도 (500ms → 1s → 2s)
+# TimeoutException 발생 시 재시도
+# NullPointerException은 재시도하지 않음
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 3 # 최대 3번 재시도
+      waitDuration: 500 # 재시도 간격 500ms
+      enableExponentialBackoff: true # 지수 백오프 활성화
+      exponentialBackoffMultiplier: 2 # 재시도 간격이 2배씩 증가 (500ms → 1초 → 2초)
+      ignoreExceptions:
+        - java.lang.NullPointerException # NullPointerException은 재시도하지 않음
+      retryExceptions:
+        - java.util.concurrent.TimeoutException # TimeoutException 발생 시 재시도
+
+# 5초 동안 1개의 요청만 허용
+# 추가 요청은 1초 동안 대기 가능, 이후 RateLimiterException 발생
+resilience4j.ratelimiter:
+  configs:
+    default:
+      timeoutDuration: 1000 # 대기 가능한 최대 시간 (1초)
+      limitRefreshPeriod: 5000 # 5초마다 제한을 초기화
+      limitForPeriod: 1 # 5초 동안 1개의 요청만 허용

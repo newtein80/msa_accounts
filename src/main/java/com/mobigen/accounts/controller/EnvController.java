@@ -13,9 +13,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.mobigen.accounts.dto.ErrorResponseDto;
+import com.mobigen.accounts.service.IAccountsService;
 import com.mobigen.accounts.service.client.CardsFeignClient;
 import com.mobigen.accounts.utils.RequestUtil;
 
@@ -46,6 +48,9 @@ public class EnvController {
 
     @Autowired
     private Environment environment;
+	
+	@Autowired
+    private IAccountsService iAccountsService;
 
     @Operation(summary = "Gateway check REST API", description = "REST API to check API-Gateway")
     @ApiResponses({
@@ -105,6 +110,7 @@ public class EnvController {
         } catch (Exception e) {
 			log.error(e.getMessage());
         }
+        log.info("Check hostname: " + hostname);
         return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(buildVersion + "::" + hostname);
@@ -133,6 +139,18 @@ public class EnvController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(environment.getProperty("JAVA_HOME"));
+    }
+
+    @Operation(summary = "Send to communication (Test)", description = "Send to communication (Test)")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "HTTP Status OK"),
+            @ApiResponse(responseCode = "500", description = "HTTP Status Internal Server Error", content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    @GetMapping("/send")
+    public ResponseEntity<String> sendCommunicationTest(
+            @RequestParam(value = "param") String param) {
+        boolean result = iAccountsService.sendCommunication(param);
+        return ResponseEntity.status(HttpStatus.OK).body(String.valueOf(result));
     }
     
 }
